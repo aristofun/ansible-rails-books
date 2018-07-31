@@ -1,4 +1,4 @@
-### Simple VPS provisioning for simple programmers
+# Simple VPS provisioning for simple programmers
 
 *In honor of all those brave programmers who have disappeared into devops messy swamps*
  
@@ -15,17 +15,17 @@ analyzing logs, googling linux recipes, ssh-ing back and forth.
 Tested on clean Ubuntu 16.04 64bit so far. Might as well work with some updates on Ubuntu 14.04, 18.04. 
 You're welcome to contribute, fix and improve!
 
-## How to
+# How to
 
 You need [ansible 2.6 installed](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) on your provisioning machine (your computer).
 
-#### 1. Copy 
+### 1. Copy 
 
 Copy `.ansible/`, `ansible.cfg` to your rails app folder. 
 
 Rails `database.yml`, `secrets.yml` are expected to be in their default locations (configurable). 
 
-#### 2. Configuration
+### 2. Configuration
 
 Editing config files before running the scripts it's all you have to do, but you have to do it.  
 
@@ -50,7 +50,7 @@ But I still encourage you to run these books on a clean ubuntu server only.
 
 Each book is intended to run on specific group. Please take a brief look inside the books.
 
-#### 3. Run
+### 3. Run
 
 All books bundled in a single script (requires all your configs set up straight):
 
@@ -68,7 +68,7 @@ You may run books individually for specific goals (just set up redis nodes etc.)
 ansible-playbook  .ansible/books/<book_file>.yml --ask-become-pass
 ```
  
-#### 4. Troubleshooting
+### 4. Troubleshooting
 
 It's usually not a problem to run same book again and again until error would be fixed. 
 But be carefull with your important servers — nobody's responsible for your data but you!
@@ -79,14 +79,14 @@ But be carefull with your important servers — nobody's responsible for your da
 * if you want more, you would need to learn ansible more
 * pull-request your findings to this repo!
 
-#### 5. Improve & contribute
+### 5. Improve & contribute
 
 Got a bug, have an idea, have written additional book? Please share and pull-request! 
 
 Applications come and go, karma is forever.
 
 
-## Important stuff
+# Important stuff
 
 All the code is provided as is. Use it with care at your own risk. Authors are not responsible for anything. 
 
@@ -100,7 +100,7 @@ Ansible Galaxy roles used (bundled):
 
 Respect and thanks to the authors!  
 
-## Feature list
+# Feature list
 
 What these playbooks can do: feature / hosts group name.
 
