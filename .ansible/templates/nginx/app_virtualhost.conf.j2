@@ -1,0 +1,33 @@
+server {
+    listen       80;
+		server_name {{ _app.url }} www.{{ _app.url }};
+		root {{ _app.path }}/current/public;
+
+    passenger_ruby /home/{{ _remote_user }}/.rbenv/versions/{{ _ruby }}/bin/ruby;
+		passenger_enabled on;
+
+#		passenger_max_requests 10000;
+#		passenger_max_instances 1;
+#   passenger_min_instances 0;
+
+    rails_env staging;
+
+    error_log /var/log/nginx/{{ _app.name }}_error.log;
+    access_log /var/log/nginx/{{ _app.name }}_access.log;
+
+		error_page  404              /pages/404.html;
+		error_page   500 502 503 504  /pages/500.html;
+
+    # http://tweaked.io/guide/nginx/
+    location ~* \.(jpg|jpeg|gif|png|ico|xml)$ {
+             access_log        off;
+             log_not_found     off;
+             expires           2d;
+    }
+
+		location ^~ /assets/ {
+			gzip_static on;
+			expires max;
+			add_header Cache-Control public;
+		}
+}

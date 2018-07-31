@@ -1,0 +1,45 @@
+# Adding unpriveleged user for your app, configured for all host groups
+# Can be configured on a per group basis (see group_vars/ for details)
+#
+---
+- name: Set up 'deploy' user
+  hosts: all
+  remote_user: root
+  vars:
+    sshd_config: /etc/ssh/sshd_config
+
+  tasks:
+    - name: Create {{ _remote_user }} user
+      user:
+        name: '{{ _remote_user }}'
+        password: '{{ _remote_user_sudopass }}'
+        groups: '{{ _remote_user_groups }}'
+        state: present
+        shell: /bin/bash       # Defaults to /bin/bash
+        system: no             # Defaults to no
+        createhome: yes        # Defaults to yes
+
+    - name: allow %adm use service without pw
+      blockinfile:
+        path: /etc/sudoers
+        block: |
+          %adm ALL=NOPASSWD: /usr/sbin/service
+
+    - name: Set up authorized keys for {{ _remote_user }}
+      authorized_key:
+        user: '{{ _remote_user }}'
+        state: present
+        key: '{{ item }}'
+      with_file: '{{ _remote_user_keys }}'
+      register: add_identity_key
+      notify: restart ssh
+
+    # YOU SHOULD NEVER REMOVE THIS STEP!
+    - name: Disable password login
+      lineinfile: dest={{ sshd_config }} regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication no"
+      when: add_identity_key is success and not add_identity_key is skipped
+      notify: restart ssh
+
+  handlers:
+    - name: restart ssh
+      service: name=ssh state=restarted

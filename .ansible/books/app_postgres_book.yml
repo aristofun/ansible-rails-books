@@ -1,0 +1,46 @@
+# Rails Postgres DB provisioning for the app host
+# Based on typical database.yml configuration (see postgres.yml for config)
+#
+---
+- name: Create PG user+DB
+  hosts: postgres*
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  tasks:
+  - include_vars:
+      file: "{{ _databaseyml_path|default ('../../config/database.yml') }}"
+      name: railsdb
+
+  # required for postgresql_ ansible tasks
+  - apt:
+      name: python3-psycopg2
+
+  - set_fact:
+      db: '[ {% for k, v in railsdb.items() %}{% if k in _appstages %}{{ v }},{% endif %} {% endfor %} ]'
+
+  - name: Create User
+    become_user: postgres
+    postgresql_user:
+      name: "{{ item.username|default (item.user) }}"
+      password: "{{ item.password }}"
+      conn_limit: "{{ ((item.pool|default (5))|int + 1) * 7 }}"
+      role_attr_flags: "{{ _pguser_priveleges| default('LOGIN,CREATEDB,NOSUPERUSER,NOCREATEROLE,NOREPLICATION') }}"
+    with_items: '{{ db }}'
+
+  - name: Create DB
+    become_user: postgres
+    postgresql_db:
+      name: "{{ item.database }}"
+      encoding: "{{ item.encoding|default ('UTF-8') }}"
+      lc_collate: "{{ item.collation|default ('') }}"
+      lc_ctype: "{{ item.ctype|default ('') }}"
+      template: "{{ item.template|default ('template0') }}"
+      owner: "{{ item.username|default (item.user) }}"
+    with_items: '{{ db }}'
+
+
+# 2check in psql
+# select * from pg_shadow;
+# \l
+# \du

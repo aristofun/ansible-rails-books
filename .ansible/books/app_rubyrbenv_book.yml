@@ -1,0 +1,25 @@
+# rbenv/Ruby provisioning for the app host
+# Role used https://github.com/zzet/ansible-rbenv-role
+---
+- name: Ruby setup
+  hosts: passenger-nginx-app*
+  remote_user: '{{ _remote_user }}'
+  become: true
+  gather_facts: true
+  vars:
+    rbenv:
+      env: user
+      version: '{{ _rbenv }}'
+      default_ruby: '{{ _ruby }}'
+      rubies:
+        - version: '{{ _ruby }}'
+
+  roles:
+    - role: zzet.rbenv
+      rbenv_users:
+        - '{{ _remote_user }}'
+
+  post_tasks:
+      - command: 'sudo -iu {{ _remote_user }} gem update --system'
+        when: _ruby_updategem is defined and _ruby_updategem
+        #  https://github.com/ansible/ansible/issues/4854

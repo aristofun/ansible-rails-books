@@ -1,0 +1,22 @@
+# APT packages update & upgrade
+---
+- name: APT update
+  hosts: all
+  remote_user: root
+
+  tasks:
+    - name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: full
+      when: _aptupgrade is defined and _aptupgrade
+
+    - name: Clean apt
+      apt:
+        autoclean: yes
+        autoremove: yes
+      when: _aptupgrade is defined and _aptupgrade

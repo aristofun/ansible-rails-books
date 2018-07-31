@@ -1,0 +1,99 @@
+# Standalone "send-only" mode Postfix provisioning
+---
+- name: Setup postfix server
+  hosts: postfix-dkim
+  remote_user: '{{ _remote_user }}'
+  become: true
+#
+  tasks:
+    # Interactive vars setup
+    - name: gui options postfix Type
+      debconf:
+        name: postfix
+        question: postfix/main_mailer_type
+        answer: Internet Site
+        vtype: select
+
+    - name: gui options postfix URL
+      debconf:
+        name: postfix
+        question: postfix/mailname
+        answer: '{{ _server_url }}'
+        vtype: string
+
+    - name: Install postfix package
+      apt:
+        name: mailutils
+        update_cache: yes
+      # http://unix.stackexchange.com/questions/185365/mail-cannot-send-message-process-exited-with-a-non-zero-status
+
+    - name: Add mailname
+      copy:
+        content: '{{ _server_url }}'
+        dest: /etc/mailname
+#        group: root
+#        owner: root
+#        mode: 0644
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^myorigin'
+        line: 'myorigin = /etc/mailname'
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^inet_interfaces'
+        line: 'inet_interfaces = loopback-only'
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^local_transport'
+        line: 'local_transport = error:local delivery is disabled'
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^alias_maps'
+        line: 'alias_maps = hash:/etc/aliases'
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^mydestination'
+        line: 'mydestination = '
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^alias_database'
+        line: 'alias_database = hash:/etc/aliases'
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^myhostname'
+        line: 'myhostname = {{ _server_url }}'
+      notify: restart postfix
+
+    - template:
+        src: ../templates/postfix_aliases.j2
+        dest: /etc/aliases
+      notify:
+        - restart postfix
+        - newaliases
+
+  handlers:
+    - name: restart postfix
+      service: name=postfix state=restarted
+
+    - name: newaliases
+      command: newaliases

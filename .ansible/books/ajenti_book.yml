@@ -1,0 +1,47 @@
+# Ajenti 1.x admin web panel setup
+# http://ajenti.org
+# https://support.ajenti.org/knowledge-bases/5/articles/1121-installing-on-ubuntu
+---
+- name: Set up ajenti 1.x panel
+  hosts: ajenti
+  remote_user: root
+
+  tasks:
+    # Add specified repository into sources list using specified filename.
+    - name: Add an Apt signing key, uses whichever key is at the URL
+      apt_key:
+        url: http://repo.ajenti.org/debian/key
+        state: present
+
+    - apt_repository:
+        repo: deb http://repo.ajenti.org/ng/debian main main ubuntu
+        state: present
+
+    - name: Update repositories cache and install ajenti
+      apt:
+        name: ajenti
+        update_cache: yes
+
+    - name: Copy configuration
+      template:
+        src: ../templates/ajenti_config.j2
+        dest: /etc/ajenti/config.json
+      notify: restart ajenti
+
+  roles:
+    - role: nickhammond.logrotate
+      logrotate_scripts:
+        - name: ajenti
+          path: /var/log/ajenti/*.log
+          options:
+            - weekly
+            - rotate 4
+            - missingok
+            - compress
+            - delaycompress
+
+  handlers:
+    - name: restart ajenti
+      service:
+        name: ajenti
+        state: restarted

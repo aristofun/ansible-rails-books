@@ -1,0 +1,56 @@
+# Application config files provisioning: logrotate, rails options, nginx virtualhost
+# Logrotate role used https://github.com/nickhammond/ansible-logrotate
+---
+- name: Prepare app dirs and configs
+  hosts: passenger-nginx-app*
+  remote_user: '{{ _remote_user }}'
+  become: false
+
+  roles:
+    - role: nickhammond.logrotate
+      become: true
+
+      logrotate_scripts:
+        - name: '{{ _app.name }}'
+          path: '{{ _app.logs_path }}/*.log'
+          options:
+            - daily
+            - rotate 7
+            - missingok
+            - compress
+            - delaycompress
+            - notifempty
+            - create 0666 {{ _remote_user }} {{ _remote_user }}
+          when: _app.logs_path is defined
+
+  tasks:
+    - name: Create apps dir
+      file:
+        path: '{{ _app.path }}'
+        state: directory
+
+    - name: Copy local files
+      copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+      with_items: '{{ _copy_files }}'
+
+    - name: Configure virtual host
+      become: true
+      template:
+        src: ../templates/nginx/app_virtualhost.conf.j2
+        dest: /etc/nginx/sites-available/{{ _app.name }}.conf
+      notify: restart nginx
+
+    - name: Ensure virtual host is enabled
+      become: true
+      file:
+        src: /etc/nginx/sites-available/{{ _app.name }}.conf
+        dest: /etc/nginx/sites-enabled/{{ _app.name  }}.conf
+        state: link
+      notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      become: true
+      service: name=nginx state=restarted

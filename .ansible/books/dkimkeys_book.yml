@@ -1,0 +1,70 @@
+# Copy (or create) DKIM keys for multiple domains
+---
+- name: Provision DKIM keys
+  hosts: postfix-dkim
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  tasks:
+    - lineinfile:
+        path: /etc/opendkim/KeyTable
+        line: mail._domainkey.{{ item }} {{ item }}:mail:/etc/opendkim/keys/{{ item }}/mail.private
+      with_items: '{{ _dkim_domains }}'
+
+    - lineinfile:
+        path: /etc/opendkim/TrustedHosts
+        line: '*.{{ item }}'
+      with_items: '{{ _dkim_domains }}'
+
+    - lineinfile:
+        path: /etc/opendkim/SigningTable
+        line: '*@{{ item }} mail._domainkey.{{ item }}'
+      with_items: '{{ _dkim_domains }}'
+
+    - copy:
+        src: '../templates/dkim/keys/{{ item }}'
+        dest: '/etc/opendkim/keys/'
+        mode: 0600
+        owner: root
+        group: root
+      with_items: '{{ _dkim_domains }}'
+      when: _dkim_newkeys is undefined or not _dkim_newkeys
+
+    - file:
+        path: /etc/opendkim/keys/{{ item }}
+        state: directory
+      with_items: '{{ _dkim_domains }}'
+      when: _dkim_newkeys is defined and _dkim_newkeys
+
+    - name: Generate new keys
+      shell: opendkim-genkey -s mail -d {{ item }}
+      args:
+        chdir: /etc/opendkim/keys/{{ item }}/
+      with_items: '{{ _dkim_domains }}'
+      when: _dkim_newkeys is defined and _dkim_newkeys
+
+    - name: Download DKIM keys locally
+      shell: (cd /etc/opendkim/keys; find . -maxdepth 3 -type f)
+      register: files_to_copy
+      when: _dkim_newkeys is defined and _dkim_newkeys
+
+    - fetch: src=/etc/opendkim/keys/{{ item }} dest=../../tmp/dkimkeys/{{ item }} flat=yes
+      with_items: '{{ files_to_copy.stdout_lines }}'
+      when: _dkim_newkeys is defined and _dkim_newkeys
+
+    - file:
+        path: '/etc/opendkim/keys/{{ item }}/mail.private'
+        mode: 0600
+        owner: opendkim
+        group: opendkim
+      with_items: '{{ _dkim_domains }}'
+      notify:
+        - restart opendkim
+        - restart postfix
+
+  handlers:
+    - name: restart postfix
+      service: name=postfix state=restarted
+
+    - name: restart opendkim
+      service: name=opendkim state=restarted

@@ -1,0 +1,80 @@
+# Basic system wide Nginx+Passenger provisioning
+# Without specific app
+#
+# Works only on Ubuntu 16.04
+# For other OS book requires update according to
+# https://www.phusionpassenger.com/library/install/nginx/install/oss/#select_os
+---
+- name: Install nginx-passenger
+  hosts: passenger-nginx-app*
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  tasks:
+    - name: Add apt HTTPS capabilities.
+      apt: "pkg={{ item }} state=latest"
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+
+    - name: Additional packages
+      apt: "pkg={{ item }} state=latest"
+      with_items: '{{ _addons }}'
+
+    - name: Keys packages
+      apt:
+        pkg: dirmngr,gnupg
+        state: latest
+
+    - name: passenger repo key
+      apt_key:
+        keyserver: hkp://keyserver.ubuntu.com:80
+        id: 561F9B9CAC40B2F7
+        state: present
+
+    - name: Keys packages
+      apt:
+        pkg: apt-transport-https,ca-certificates
+
+    - name: adding passenger repo
+      apt_repository:
+        repo: deb https://oss-binaries.phusionpassenger.com/apt/passenger {{ ansible_distribution_release }} main
+        state: present
+
+    - name: installing passenger + NGINX
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      notify: restart nginx
+      with_items:
+        - nginx-extras
+        - passenger
+
+    - template:
+        src: ../templates/nginx/passenger.j2
+        dest: /etc/nginx/passenger.conf
+      notify: restart nginx
+
+    # Nginx and configuration.
+    - name: Copy Nginx configuration into place.
+      template:
+        src: ../templates/nginx/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify: restart nginx
+
+    - name: drop default virtual host
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+      when: _drop_defhost is defined and _drop_defhost
+
+    - name: Remove useless packages
+      apt:
+        autoclean: yes
+        autoremove: yes
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted

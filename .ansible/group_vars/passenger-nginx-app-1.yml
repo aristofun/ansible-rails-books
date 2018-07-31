@@ -1,0 +1,40 @@
+# Configuration applied to passenger-nginx-app server group.
+#
+# This host rolls up fresh Passenger-nginx package, sets up ruby, application folders
+# and configs
+
+---
+# system rbenv version to use for rubies install
+# remove to skip rbenv and ruby installation
+# You can't install rbenv without ruby, they go together
+_rbenv: v1.1.1
+_ruby: 2.4.4
+
+
+#=== EDIT THIS! ================================================================
+# Rails app options
+# Remove if you need only nginx + passenger + rbenv/ruby setup, no apps
+_app: {
+  url: example.com, # app web url
+  name: example,    # internal app name as used in rb files, in capistrano etc.
+  path: '/home/{{ _remote_user }}/apps/example', # system folder to prepare
+  logs_path: '/home/{{ _remote_user }}/apps/example/shared/log', # app logs folder
+  stage: production # apps RAILS_ENV
+}
+
+#=== EDIT THIS! ================================================================
+# Local files to copy on server
+# NOTE: defaults here are intended for Capistrano 3 deployment
+_copy_files:
+  - {
+    src: '../../config/database.yml',
+    dest: '{{ _app.path }}/shared/config/'
+  }
+
+  - {
+    src: '../../config/secrets.yml',
+    dest: '{{ _app.path }}/shared/config/'
+  }
+#  You may copy whatever you need, owner of the files on the host would be _remote_user
+
+# See `./templates/nginx/` for configs to be applied for Nginx and passenger

@@ -1,0 +1,31 @@
+# Simple services health checkup for paranoics and occasional use
+---
+- name: Services Healthchecks
+  hosts: all
+  remote_user: '{{ _remote_user }}'
+
+  tasks:
+    - name: Passenger
+      shell: passenger-config validate-install --auto
+      when: "'passenger' in '{{ group_names|join(' ') }}'"
+      ignore_errors: yes
+
+    - shell: service redis_6379 status
+      when: "'redis' in '{{ group_names|join(' ') }}'"
+      ignore_errors: yes
+
+    - shell: service nginx status
+      when: "'nginx' in '{{ group_names|join(' ') }}'"
+      ignore_errors: yes
+
+    - shell: service postfix status
+      when: "'postfix' in '{{ group_names|join(' ') }}'"
+      ignore_errors: yes
+
+    - shell: service opendkim status
+      when: "'dkim' in '{{ group_names|join(' ') }}'"
+      ignore_errors: yes
+
+    - shell: service postgresql@{{ postgresql_version }}-{{postgresql_cluster_name}} status
+      when: "'postgres' in '{{ group_names|join(' ') }}'"
+      ignore_errors: yes

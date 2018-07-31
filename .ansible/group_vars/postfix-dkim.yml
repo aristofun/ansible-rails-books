@@ -1,0 +1,53 @@
+# Standalone "send-only" mode Postfix provisioning with together with OpenDKIM service
+---
+#=== EDIT THIS! ================================================================
+# your main server URL for email sending
+_server_url: example.com
+
+# email to receive system linux messages (cron, suspicious logins, critical errors)
+_system_emailalias: admin@example.com
+
+
+# If yes - new DKIM keys will be generated on server
+# and you'll have to download them and update your DNS records manually
+# So I suggest uploading keys from `templates/dkim/keys` for convenience
+_dkim_newkeys: no
+
+#=== EDIT THIS! ================================================================
+# All domain names you gonna send emails From
+# You need to set these domains DKIM "mail" DNS records accordingly
+# NO subdomains!
+#
+# You must have all mail.txt, mail.private keys in your `templates/dkim/keys`
+# by default
+_dkim_domains:
+  - example.com
+  - example2.com
+
+# default options for opendkim service
+_dkim_host: inet:12301@localhost
+_dkim_milter: inet:localhost:12301
+
+#
+# Check out `templates/dkim` and `templates/postfix_aliases.j2`
+# for additional options
+
+# 2check DKIM
+#   sendmail check-auth@verifier.port25.com (Ctrl+D to send email)
+# 2see hot sendmail queue
+#   mailq
+
+
+# -------- DKIM keys creation --------------------------------------------------
+# For MacOS recipe see https://superuser.com/questions/677769/generate-dkim-key-on-mountain-lion-os-x
+#
+# To generate DKIM keys for a domain on Ubuntu machine:
+#   1) sudo apt-get install opendkim opendkim-tools
+#   2) sudo opendkim-genkey -s mail -d yourdomain.com
+#   3) you got 2 files: mail.private, mail.txt
+#   4) PROFIT!!
+#
+#  Seek help at
+#  https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-as-a-send-only-smtp-server-on-ubuntu-14-04
+#  https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-dkim-with-postfix-on-debian-wheezy
+#  https://shamuntoha.wordpress.com/2011/07/07/postfix-cheat-sheet-cheat-code/

@@ -1,0 +1,81 @@
+# Basic configuration applied to all servers in all groups.
+# Variables may be overriden in a group specific YAML config.
+#
+# For example you can have different remote users for different server groups.
+# You can even narrow it down to hosts specific vars, but we're aiming
+# for simple deploy, right?
+#
+
+---
+_language: en_US.UTF-8 # system LANG, LANGUAGE options
+_locale: ru_RU.UTF-8   # system LC_COLLATE, LC_ALL options
+_timezone: Europe/Moscow # server's timezone
+
+_aptupgrade: yes # upgrade APT packages before provisioning
+
+_remote_user: deploy # linux owner of all app related software and folders
+
+#== CAREFULL! ==================================================================
+# https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+#
+# Hash from your actual password using mkpasswd utility
+#   Ubuntu:  sudo apt install whois
+#   Mac OS: gem install mkpasswd
+#   Windows: you serious? Go fuck yourself
+#
+#   `mkpasswd -m sha-512` and put the whole result string below
+
+_remote_user_sudopass: $6$1SakrGhCNNuOQ9jU$sYtDl/UzdspTUOlzXJ7gtnAlSzOcbesaEWeV0KUMqxnVL8AF6jPLLocJ7MHLv4pRNSh.pT9i2vA9QoFaO1ULu/
+
+# You may add system groups user will belong to
+# You shouldn't touch amd, sudo groupd
+_remote_user_groups:
+  - adm   # adm users will be allowed running `service` without password
+  - sudo  # he can do sudo
+
+
+#=== EDIT THIS! ================================================================
+# List of public SSH keys added to the user (relative or absolute path),
+# so owners of correspondent private keys could access the host
+# After succeccful keys provisioning SSH PasswordLogin to the host will be disabled
+
+_remote_user_keys:
+  - ../templates/ssh/demo_key1.pub
+  - ../templates/ssh/demo_key2.pub
+
+#===== PASSENGER-NGINX shared section, here for convenience ====================
+_nginx_user: www-data # nginx system user, usually not changed
+
+# passenger options for host (see passenger manual)
+_passenger_max_pool_size: 10
+_passenger_pool_idle_time: 600
+_passenger_max_instances_per_app: 5
+_passenger_log_level: 3
+
+_ruby_updategem: yes # run gem update --system after ruby install
+
+# Additional APT packages needed for your app
+_addons:
+  - nodejs
+  - imagemagick
+  - graphicsmagick-libmagick-dev-compat
+  - git
+
+# drop default blank nginx virtual host after install
+_drop_defhost: no
+
+#---- MISC: additional options for advanced users (uncomment to activate) ------
+# see misc_book.yml for details
+#
+# It can be useful to set these options in other groups, for example to tweak
+# crontab and Swapfile differently for Postgres and Redis hosts
+#
+# Customize swapfile settings (see https://github.com/Oefenweb/ansible-swapfile)
+swapfile_size: false # 512MB, 1G etc.
+#swapfile_swappiness: 10
+
+# Email to notify about cron tasks execution
+# _cron_mailto: techadmin@yourdomain.com
+#
+# Which python to use on a remote host (if not autodetected)
+ansible_python_interpreter: /usr/bin/python3

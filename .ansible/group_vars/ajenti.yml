@@ -1,0 +1,32 @@
+# Ajenti 1.x admin web panel setup
+# http://ajenti.org
+# https://support.ajenti.org/knowledge-bases/5/articles/1121-installing-on-ubuntu
+---
+
+#=== EDIT THIS! ================================================================
+# BE CAREFULL with this or skip Ajenti hosts group at all. Ajenti has root access.
+#
+_ajenti_email: yourmaile@example.com  # your ajenti `root` account email
+
+# Hash from your actual password using mkpasswd utility
+#   Ubuntu:  sudo apt install whois
+#   Mac OS: gem install mkpasswd
+#   Windows: seriously? Go fuck yourself
+#
+#   `mkpasswd -R 656000 -m sha-512`
+#   and put the whole result string below
+#   With incorrectly formatted password Ajenti won't start!
+
+_ajenti_pw:  "sha512|$6$rounds=656000$Nyh1f1NBdp4OssIS$HwvLWXVsNaA9TP2RNpjHI88pS0hTpGEgX6Cu8t9t1dibEpJbgf5Uq6QBOeQlBbk6N4eKoXUNm0sYYttnliehd1"
+
+#   example: "sha512|$6$rounds=656000$Nyh1f1NBdp4OssIS$HwvLWXVsNaA9TP2RNpjHI88pS0hTpGEgX6Cu8t9t1dibEpJbgf5Uq6QBOeQlBbk6N4eKoXUNm0sYYttnliehd1"
+#
+#
+# Your ajenti username is `root`
+# Your password is whatever you hashed to the string above ↑
+#===============================================================================
+
+
+_ajenti_host: '0.0.0.0' # ajenti runs localhost
+_ajenti_port: 55770   # and available on https://<host-address>:55770
+

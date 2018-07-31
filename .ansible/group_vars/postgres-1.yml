@@ -1,0 +1,96 @@
+# New Postgres cluster setup
+# Install is made by anxs.postgresql role + with minor bugfixes
+#
+# Some options are pubished here for reference, see https://github.com/ANXS/postgresql for details
+#
+---
+#=== EDIT this! ================================================================
+# Which rails stages databases to rollup for this postgres host
+_appstages:
+  - production
+  - staging
+
+# This file can be copied with different options for another host group
+# just like we can do for passenger-nginx-app*.yml files
+
+# Rails app database.yml default path
+#_databaseyml_path: ../../config/database.yml
+
+# Default options for rails app PG user (see Postgres docs)
+#_pguser_priveleges: LOGIN,CREATEDB,NOSUPERUSER,NOCREATEROLE,NOREPLICATION
+
+# Uncomment only if you understand what you're doing (https://unix.stackexchange.com/a/298362)
+# or just rely on default of your linux image
+# _kernel_shmmax: 1073741824 # (1GB segment)
+# _kernel_shmall: 524280 # 2GB/4096 - 8 (4096 `getconf PAGE_SIZE`)
+
+postgresql_version: 9.6  # PG version
+
+# System defaults for cluster used if not set
+# postgresql_encoding: "UTF-8"
+# postgresql_locale: '{{ _locale }}'
+# postgresql_ctype: '{{ _locale }}'
+
+postgresql_admin_user: "postgres"  # default pg superuser
+postgresql_default_auth_method: "trust" # can login on the same host w/o password
+
+postgresql_cluster_name: "main"
+postgresql_cluster_reset: false # don't touch cluster if already exists!
+postgresql_service_enabled: true # register as system service and autostart
+
+# Install additional libs
+postgresql_ext_install_contrib: yes
+postgresql_ext_install_dev_headers: yes
+
+#=== NOTE THIS! ================================================================
+# Read comments carefully, these access options are added to whatever PG provides by default
+postgresql_pg_hba_custom:
+- { type: local, database: all, user: all, address: "", method: md5, comment: "access for non postres user locally from rails apps etc" }
+- { type: host,  database: all, user: postgres, address: "0.0.0.0/0", method: md5, comment: "access for postgres user outside the host" }
+
+#==== WARNING! ================================================================
+# In it's not safe to keep this file with hashed pass in your repo!
+#
+# Set strong password for postgres superuser IF you need access to cluster
+# from another hosts, otherwise — drop the line!
+#
+#  HOW TO MAKE HASHED PASSWORD (it's a bit tricky!)
+#     1) choose password for instance QWERTY (don't be an idiot here, ok?)
+#     2) on ubuntu run: echo -n QWERTYpostgres | md5sum
+#        on macos run: echo -n QWERTYpostgres | md5
+#        (it's your pass + postgres username, yes)
+
+#        on windows: just netflix & chill, bro
+#
+#     3) you'll get a string like 9df270eb52907fff723d9b8b7436113a
+#     4) together with 'md5' prefix it is your password!
+#
+_postgres_user_pass: md59df270eb52907fff723d9b8b7436113a
+
+# Hosts PG is accepting connections from, * - from anywhere
+postgresql_listen_addresses:
+  - "*"
+
+#-------------------------------------------------------------------------------
+# Conservative (still reliable) non-default options for less than 1GB free memory
+# and VPS low on resources.
+# Don't uncomment for dedicated Postgres hosts or powerfull hosts
+
+#postgresql_max_connections: 50
+#postgresql_superuser_reserved_connections: 5
+
+#postgresql_shared_buffers: 128MB
+#postgresql_maintenance_work_mem: 32MB
+
+#postgresql_vacuum_cost_delay: 20       # 0-100 milliseconds
+#postgresql_effective_cache_size:       512MB
+#postgresql_random_page_cost:           3.0     # for ssd, 4.0 (max) - for hdd
+
+#postgresql_max_files_per_process: 300  # min 25
+
+# logging
+#postgresql_client_min_messages: "warning"
+
+# Seek help at
+#  https://github.com/ANXS/postgresql
+#  https://www.postgresql.org/docs/9.6/static/runtime-config.html

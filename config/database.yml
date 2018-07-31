@@ -1,0 +1,23 @@
+# Sample rails database.yml file
+# DO NOT PUT IT IN YOUR REPO!
+#
+
+default: &default
+  adapter: postgresql
+  pool: 5
+  encoding: UTF-8
+  template: template0
+  collation: ru_RU.UTF-8
+  ctype: ru_RU.UTF-8
+
+production:
+  <<: *default
+  database: my_production_database
+  username: my_production_pg_user
+  password: 123123
+
+staging:
+  <<: *default
+  database: my_staging_database
+  username: my_staging_user
+  password: 321321

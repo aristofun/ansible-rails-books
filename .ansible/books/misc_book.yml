@@ -1,0 +1,26 @@
+# Additional system tweaks
+# please understand what you're doing before doing it
+---
+- name: Useful tweaks
+  hosts: all
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  roles:
+    - role: Oefenweb.swapfile
+      # see https://github.com/Oefenweb/ansible-swapfile for options
+
+
+  tasks:
+    - name: Email entry crontab
+      cronvar:
+        name: MAILTO
+        value: '{{ _cron_mailto }}'
+      when: _cron_mailto is defined
+
+
+# How 2check:
+# crontab -e (MAILTO var)
+# sudo sysctl vm.swappiness
+# cat /proc/sys/vm/vfs_cache_pressure
+# free -m

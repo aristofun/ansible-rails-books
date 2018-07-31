@@ -1,0 +1,20 @@
+# Redis install options.
+# Redis is installed with this 3rd party role DavidWittman.redis + some minor bugfixing
+---
+redis_bind: 127.0.0.1
+redis_protected_mode: "yes"
+redis_port: 6379
+redis_version: 4.0.10
+redis_daemonize: "no"
+redis_supervised: systemd
+redis_syslog_enabled: "no"
+
+#redis_databases: 5
+#redis_maxclients: 1000
+#redis_maxmemory: 100mb
+#redis_maxmemory_policy: volatile-lfu
+
+
+# Seek help at
+#  https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-redis-on-ubuntu-16-04
+#  https://github.com/DavidWittman/ansible-redis

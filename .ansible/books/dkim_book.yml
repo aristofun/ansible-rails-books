@@ -1,0 +1,78 @@
+# Set up opendkim server, join DKIM and postfix with milters
+#
+---
+- name: Setup DKIM
+  hosts: postfix-dkim
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  tasks:
+    - apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install DKIM packages
+      apt:
+        name: '{{ item }}'
+      with_items:
+        - opendkim
+        - opendkim-tools
+
+    - blockinfile:
+        path: /etc/opendkim.conf
+        block: "{{ lookup('file', '../templates/dkim/opendkim.conf') }}"
+      notify: restart opendkim
+
+    - lineinfile:
+        path: /etc/opendkim.conf
+        line: 'Socket             {{ _dkim_host }}'
+      notify: restart opendkim
+
+    - blockinfile:
+        path: /etc/default/opendkim
+        block: |
+          SOCKET="{{ _dkim_host }}"
+      notify: restart opendkim
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^milter_protocol'
+        line: 'milter_protocol = 2'
+      notify: restart postfix
+
+    - lineinfile:
+        path: /etc/postfix/main.cf
+        state: present
+        regexp: '^milter_default_action'
+        line: 'milter_default_action = accept'
+      notify: restart postfix
+
+    - blockinfile:
+        path: /etc/postfix/main.cf
+        block: |
+          smtpd_milters = {{ _dkim_milter }}
+          non_smtpd_milters = {{ _dkim_milter }}
+      notify:
+        - restart opendkim
+        - restart postfix
+
+    - file:
+        path: /etc/opendkim/keys
+        state: directory
+
+    # Copy blank files placeholders
+    - copy:
+        src: '../templates/dkim/{{ item }}'
+        dest: '/etc/opendkim/{{ item }}'
+      with_items:
+        - TrustedHosts
+        - KeyTable
+        - SigningTable
+
+  handlers:
+    - name: restart opendkim
+      service: name=opendkim state=restarted
+
+    - name: restart postfix
+      service: name=postfix state=restarted

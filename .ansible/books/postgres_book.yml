@@ -1,0 +1,30 @@
+# Postgres system wide provisioning
+# made by anxs.postgresql role + with minor bugfixes https://github.com/ANXS/postgresql
+---
+- name: Install Postgres
+  hosts: postgres*
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  pre_tasks:
+    - sysctl:
+        name: kernel.shmmax
+        value: _kernel_shmmax
+        reload: yes
+      when: _kernel_shmmax is defined
+
+    - sysctl:
+        name: kernel.shmall
+        value: _kernel_shmall
+        reload: yes
+      when: _kernel_shmall is defined
+
+  roles:
+    - role: anxs.postgresql
+
+  post_tasks:
+    # encrypted pass = 'md5<md5(password.join(user_name))>' (in hex lowercase format)
+    - name: Set up postgres user PW
+      command: psql -U postgres -c "ALTER USER postgres WITH ENCRYPTED PASSWORD '{{_postgres_user_pass}}';"
+      notify: restart postgresql
+      when: _postgres_user_pass is defined

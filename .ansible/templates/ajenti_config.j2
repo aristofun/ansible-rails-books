@@ -1,0 +1,36 @@
+{
+    "users": {
+        "root": {
+            "configs": {
+                "ajenti.plugins.notepad.notepad.Notepad": "{\"bookmarks\": [], \"root\": \"/\"}",
+                "ajenti.plugins.terminal.main.Terminals": "{\"shell\": \"sh -c $SHELL || bash\"}",
+                "ajenti.plugins.logs.main.Logs": "{\"root\": \"/var/log\"}",
+                "ajenti.plugins.dashboard.dash.Dash": "{\"widgets\": [{\"index\": 0, \"config\": null, \"container\": \"1\", \"class\": \"ajenti.plugins.sensors.memory.MemoryWidget\"}, {\"index\": 1, \"config\": null, \"container\": \"1\", \"class\": \"ajenti.plugins.sensors.memory.SwapWidget\"}, {\"index\": 2, \"config\": {\"device\": \"/\"}, \"container\": \"1\", \"class\": \"ajenti.plugins.fstab.widget.DiskSpaceWidget\"}, {\"index\": 3, \"config\": {\"device\": \"/\"}, \"container\": \"1\", \"class\": \"ajenti.plugins.fstab.widget.DiskFreeSpaceWidget\"}, {\"index\": 4, \"config\": {\"device\": \"sda1\"}, \"container\": \"1\", \"class\": \"ajenti.plugins.fstab.iops.ImmediateIOWidget\"}, {\"index\": 5, \"config\": {\"device\": \"eth0\"}, \"container\": \"1\", \"class\": \"ajenti.plugins.network.widget.TrafficWidget\"}, {\"index\": 6, \"config\": {\"device\": \"eth0\"}, \"container\": \"1\", \"class\": \"ajenti.plugins.network.widget.ImmediateTrafficWidget\"}, {\"index\": 7, \"config\": null, \"container\": \"1\", \"class\": \"ajenti.plugins.power.power.PowerWidget\"}, {\"index\": 0, \"config\": null, \"container\": \"0\", \"class\": \"ajenti.plugins.sensors.uptime.UptimeWidget\"}, {\"index\": 1, \"config\": null, \"container\": \"0\", \"class\": \"ajenti.plugins.sensors.cpu.CPUWidget\"}, {\"index\": 2, \"config\": {\"service\": \"nginx\"}, \"container\": \"0\", \"class\": \"ajenti.plugins.services.widget.ServiceWidget\"}, {\"index\": 3, \"config\": {\"service\": \"postfix\"}, \"container\": \"0\", \"class\": \"ajenti.plugins.services.widget.ServiceWidget\"}, {\"index\": 4, \"config\": {\"service\": \"redis_6379\"}, \"container\": \"0\", \"class\": \"ajenti.plugins.services.widget.ServiceWidget\"}]}",
+                "ajenti.plugins.fm.fm.FileManager": "{\"start\": \"/\", \"root\": \"/\"}",
+                "ajenti.users.UserManager": "{\"sync-provider\": \"\"}",
+                "ajenti.plugins.tasks.manager.TaskManager": "{\"task_definitions\": []}"
+            },
+            "password": "{{ _ajenti_pw }}",
+            "email": "{{ _ajenti_email }}",
+            "permissions": []
+        }
+    },
+
+    "language": "",
+
+    "bind": {
+        "host": "{{ _ajenti_host }}",
+        "port": {{ _ajenti_port }}
+    },
+
+    "enable_feedback": false,
+
+    "ssl": {
+        "enable": true,
+        "certificate_path": "/etc/ajenti/ajenti.pem"
+    },
+
+    "authentication": true
+}
+
+

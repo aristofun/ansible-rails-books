@@ -1,0 +1,82 @@
+# Locale, timezone provisioning for all server groups
+# Variables from `group_vars/all.yml` applied
+#
+# Any variable may be overriden in `group_vars/<group_name>.yml`
+#
+# WARNING! Locale update requires server reboot, it may take some time or even break
+# no worries here — you may just run the book again after reconnect.
+---
+- name: Setup locale and timezone
+  hosts: all
+  remote_user: root
+
+  tasks:
+    - name: Create {{ _language }} locale
+      locale_gen:
+        name: '{{ _language }}'
+        state: present
+      register: locale_update
+      when: _language is defined
+
+    - name: Create {{ _locale }} locale
+      locale_gen:
+        name: '{{ _locale }}'
+        state: present
+      register: locale_update
+      when: _locale is defined
+
+    - name: add LC_ALL to environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        regexp: '^LC_ALL='
+        line: 'LC_ALL={{ _locale }}'
+      register: locale_update
+      when: _locale is defined
+
+    - name: add LC_COLLATE to environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        regexp: '^LC_COLLATE='
+        line: 'LC_COLLATE={{ _locale }}'
+      register: locale_update
+      when: _locale is defined
+
+    - name: add LANG to environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        regexp: '^LANG='
+        line: 'LANG={{ _language }}'
+      register: locale_update
+      when: _language is defined
+
+    - name: add LANGUAGE to environment
+      lineinfile:
+        path: /etc/environment
+        state: present
+        regexp: '^LANGUAGE='
+        line: 'LANGUAGE={{ _language }}'
+      register: locale_update
+      when: _language is defined
+
+    # sudo timedatectl set-timezone America/New_York
+    - name: set timezone to {{ _timezone }}
+      timezone:
+        name: '{{ _timezone }}'
+      when: _timezone is defined
+
+    - name: Reboot
+      shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+      when: locale_update is changed
+
+    - name: Wait for the reboot to complete...
+      wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 5
+        timeout: 300
+      when: locale_update is changed

@@ -1,0 +1,10 @@
+# Redis provisioning for all `redis` group servers
+#
+---
+- name: Install Redis
+  hosts: redis
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+  roles:
+    - role: DavidWittman.redis

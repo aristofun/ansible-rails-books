@@ -1,0 +1,29 @@
+# Demo config for your second rails app.
+#
+# NOT ACTUALLY APPLIED unless there is a `passenger-nginx-app-2`
+# group is in `hosts.yml`
+
+---
+_rbenv: v1.1.1
+_ruby: 2.4.4
+
+#=== EDIT THIS! ================================================================
+_app: {
+  url: staging.example.com,
+  name: example_staging,
+  path: '/home/{{ _remote_user }}/apps/example_staging',
+  logs_path: '/home/{{ _remote_user }}/apps/example_staging/shared/log',
+  stage: staging
+}
+
+#=== EDIT THIS! ================================================================
+_copy_files:
+  - {
+    src: '../../config/database.yml',
+    dest: '{{ _app.path }}/shared/config/'
+  }
+
+  - {
+    src: '../../config/secrets.yml',
+    dest: '{{ _app.path }}/shared/config/'
+  }
