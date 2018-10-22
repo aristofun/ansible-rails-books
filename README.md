@@ -1,11 +1,11 @@
-### Simple VPS provisioning for simple programmers
+# Simple VPS provisioning for simple programmers
 
 *In honor of all those brave programmers who have disappeared into devops messy swamps*
  
 ```
-1. Edit hosts.yml, edit options in up group_vars/
-2. > ansible-playbook  .ansible/books/go.yml
-3. Your servers are ready
+1. Edit hosts.yml, edit options in up group_vars/*.yaml
+2. ansible-playbook  .ansible/books/go.yml
+3. Your servers are ready deployment and work
 4. PROFIT
 ```
 
@@ -15,52 +15,50 @@ analyzing logs, googling linux recipes, ssh-ing back and forth.
 Tested on clean Ubuntu 16.04 64bit so far. Might as well work with some updates on Ubuntu 14.04, 18.04. 
 You're welcome to contribute, fix and improve!
 
-## How to
+# How to
 
 You need [ansible 2.6 installed](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) on your provisioning machine (your computer).
 
-#### 1. Copy 
+### 1. Copy 
 
-Copy `.ansible/`, `ansible.cfg` to your rails app folder. 
+Copy `.ansible/`, `ansible.cfg` to your rails app folder or separate folder. Rails `database.yml`, `secrets.yml` are expected to be in their default locations (configurable). 
 
-Rails `database.yml`, `secrets.yml` are expected to be in their default locations (configurable). 
+### 2. Configuration
 
-#### 2. Configuration
-
-Editing config files before running the scripts it's all you have to do, but you have to do it.  
+Editing config files before running the scripts is all you have to do, but you have to do it.  
 
 `ansible.cfg` — ansible environment, edit paths if neccessary  
-`.ansible/hosts.yml` — the list of your servers to provision, edit according to comments  
-`.ansible/group_vars/*.yml` — **configs** defining what will be actually going on with different hosts
+`.ansible/hosts.yml` — the list of your servers to provision
+`.ansible/group_vars/*.yml` — **main configs** defining what will be actually going on
 
-`group_vars/` YAML filename == hosts group in `hosts.yml`
+*group_vars/*.yml* filename == hosts group in *hosts.yml*
 
 Variables declared in `group_vars/all.yml` are applied to all groups (all your hosts).
 
 **IMPORTANT**:  you need to have SSH root access to all provisioned hosts 
 
 **Idea**  
-Each YAML in `.ansible/books/` is a set of options (rules, commands) would be applied 
-one by one to the hosts being provisioned.
+Each YAML in `.ansible/books/` is a set of options (rules, commands) to be applied one by one to the hosts being provisioned.
 
-Most options are checked before being applied. Let's say if your node already has 
-postgres-9.6 installed it would not be installed again. 
+Most options are checked before being applied. Let's say if your node already has postgres-9.6 installed it would not be installed again. Most ansible tasks are [*idempotent*](https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html). 
 
-But I still encourage you to run these books on a clean ubuntu server only. 
+These books are tested against clean fresh ubuntu nodes. It could work with already running and configured nodes, or it could break them.
 
 Each book is intended to run on specific group. Please take a brief look inside the books.
 
-#### 3. Run
+### 3. Run
 
-All books bundled in a single script (requires all your configs set up straight):
+All books bundled in a single script:
 
 ```
 ansible-playbook  .ansible/books/go.yml --ask-become-pass
 ```
 
-Must type in *deploy* user SUDO pass.
+Must type in your *deploy* user SUDO pass (the one you've chosen on a configuration step).
 
 Now you're ready to take it from there and deploy your app as usual (capistrano etc.)
+
+---
 
 You may run books individually for specific goals (just set up redis nodes etc.)
 
@@ -68,7 +66,7 @@ You may run books individually for specific goals (just set up redis nodes etc.)
 ansible-playbook  .ansible/books/<book_file>.yml --ask-become-pass
 ```
  
-#### 4. Troubleshooting
+### 4. Troubleshooting
 
 It's usually not a problem to run same book again and again until error would be fixed. 
 But be carefull with your important servers — nobody's responsible for your data but you!
@@ -79,14 +77,14 @@ But be carefull with your important servers — nobody's responsible for your da
 * if you want more, you would need to learn ansible more
 * pull-request your findings to this repo!
 
-#### 5. Improve & contribute
+### 5. Improve & contribute
 
 Got a bug, have an idea, have written additional book? Please share and pull-request! 
 
 Applications come and go, karma is forever.
 
 
-## Important stuff
+# Important stuff
 
 All the code is provided as is. Use it with care at your own risk. Authors are not responsible for anything. 
 
@@ -101,7 +99,7 @@ Ansible Galaxy roles used (bundled):
 
 Respect and thanks to the authors!  
 
-## Feature list
+# Feature list
 
 What these playbooks can do: feature / hosts group name.
 

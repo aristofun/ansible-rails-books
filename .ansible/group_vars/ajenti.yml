@@ -28,5 +28,5 @@ _ajenti_pw:  "sha512|$6$rounds=656000$Nyh1f1NBdp4OssIS$HwvLWXVsNaA9TP2RNjHI0hTpG
 
 
 _ajenti_host: '0.0.0.0' # ajenti runs localhost
-_ajenti_port: 55770   # and available on https://<host-address>:55770
+_ajenti_port: 8000   # and available on https://<host-address>:55770
 
