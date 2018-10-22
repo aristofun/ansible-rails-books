@@ -93,6 +93,7 @@ All the code is provided as is. Use it with care at your own risk. Authors are n
 Ansible Galaxy roles used (bundled):
  
 - anxs.postgresql 
+- geerlingguy.certbot 
 - DavidWittman.redis 
 - nickhammond.logrotate
 - Oefenweb.swapfile
@@ -120,6 +121,7 @@ What these playbooks can do: feature / hosts group name.
   - logs and logrotate management
   - folders set up
   - capistrano deployment support
+  - HTTPS nginx auto-setup with LetsEncrypt Certbot (**New**).
 * Postgres / `postgres` group
   - user setup from `database.yml`
   - database setup from `database.yml`

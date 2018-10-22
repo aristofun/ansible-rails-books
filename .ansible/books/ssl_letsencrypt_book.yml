@@ -1,0 +1,43 @@
+---
+- name: Ubuntu letsencrypt SSL setup
+  hosts: passenger-nginx-app*
+  remote_user: '{{ _remote_user }}'
+  become: true
+
+# https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx
+#  https://github.com/geerlingguy/ansible-role-certbot
+
+  vars:
+    certbot_auto_renew_user: '{{ _remote_user }}'
+    certbot_auto_renew_options: '--max-log-backups 100 --no-self-upgrade --pre-hook "service nginx stop" --post-hook "service nginx start"'
+    certbot_install_from_source: yes
+
+    # Certbot renew crontab options
+    certbot_auto_renew_weekday: 3
+    certbot_auto_renew_hour: 6
+    certbot_auto_renew_minute: 20
+
+    certbot_create_if_missing: yes
+    certbot_create_method: standalone
+
+    certbot_admin_email: '{{ _admin_email }}'
+    certbot_certs: '{{ _ssl_domains }}'
+
+    certbot_create_standalone_stop_services:
+      - nginx
+
+  roles:
+    - geerlingguy.certbot
+      when: letsencrypt is defined
+
+  post_tasks:
+    # SSL template
+    - name: Copy LetsEncrypt configuration
+      template:
+        src: ../templates/nginx/certbot.j2
+        dest: /etc/nginx/certbot_{{ _app.name }}.conf
+      when: letsencrypt is defined
+
+# 2check:
+# certbot certificates
+# ls -ls /etc/letsencrypt/live/**

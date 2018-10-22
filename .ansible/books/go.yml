@@ -1,17 +1,18 @@
 ---
 # System playbooks
 # Provisioning all app independent VPS nut and bolts
-#- import_playbook: aptupgrade.yml
-#- import_playbook: localetimezone_book.yml
-#- import_playbook: ajenti_book.yml
-#- import_playbook: remoteuser_book.yml
-#- import_playbook: postfix_book.yml
-#- import_playbook: dkim_book.yml
-#- import_playbook: dkimkeys_book.yml
-#- import_playbook: postgres_book.yml
-#- import_playbook: redis_book.yml
-#- import_playbook: nginxpassenger_book.yml
-#- import_playbook: misc_book.yml
+- import_playbook: aptupgrade.yml
+- import_playbook: localetimezone_book.yml
+- import_playbook: ajenti_book.yml
+- import_playbook: remoteuser_book.yml
+- import_playbook: postfix_book.yml
+- import_playbook: dkim_book.yml
+- import_playbook: dkimkeys_book.yml
+- import_playbook: postgres_book.yml
+- import_playbook: redis_book.yml
+- import_playbook: nginxpassenger_book.yml
+- import_playbook: ssl_letsencrypt_book.yml
+- import_playbook: misc_book.yml
 
 # App related playbooks
 - import_playbook: app_files_book.yml

@@ -3,6 +3,10 @@ server {
 		server_name {{ _app.url }} www.{{ _app.url }};
 		root {{ _app.path }}/current/public;
 
+    {% if letsencrypt %}
+    include /etc/nginx/certbot_{{ _app.name }}.conf;
+    {% endif %}
+
     passenger_ruby /home/{{ _remote_user }}/.rbenv/versions/{{ _ruby }}/bin/ruby;
 		passenger_enabled on;
 

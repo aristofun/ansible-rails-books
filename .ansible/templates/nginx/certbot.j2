@@ -1,0 +1,31 @@
+# ======= SSL options ================
+# https://serverfault.com/questions/270339/nginx-force-ssl-on-one-path-non-ssl-on-others
+# https://www.digitalocean.com/community/questions/best-way-to-configure-nginx-ssl-force-http-to-redirect-to-https-force-www-to-non-www-on-serverpilot-free-plan-by-using-nginx-configuration-file-only
+# https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
+
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/{{ _ssl_domains.domains[0] }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ _ssl_domains.domains[0] }}/privkey.pem;
+
+    # Improve HTTPS performance with session resumption
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:40m;
+    ssl_session_tickets off; # https://github.com/mozilla/server-side-tls/issues/135
+
+    # Disable SSLv3
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+
+    # Enable server-side protection against BEAST attacks
+  	ssl_prefer_server_ciphers on;
+	  ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
+
+    # Enable HSTS (https://developer.mozilla.org/en-US/docs/Security/HTTP_Strict_Transport_Security)
+	  add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ _ssl_domains.domains[0] }}/chain.pem;
+
+    #resolver 8.8.8.8 8.8.4.4 valid=300s;
+    #resolver_timeout 5s;
+# ======= / SSL options ================

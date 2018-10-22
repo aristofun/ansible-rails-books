@@ -13,6 +13,16 @@ _ruby: 2.4.4
 
 #=== EDIT THIS! ================================================================
 # Rails app options
+
+# for SSL certificates notifications etc.
+_admin_email: admin@example.com
+
+# no wildcards!
+_ssl_domains:
+  - domains:
+    - example.com
+    - sub.example.com
+
 # Remove if you need only nginx + passenger + rbenv/ruby setup, no apps
 _app: {
   url: example.com, # app web url
