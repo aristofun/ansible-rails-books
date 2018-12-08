@@ -6,7 +6,7 @@
 # https://www.phusionpassenger.com/library/install/nginx/install/oss/#select_os
 ---
 - name: Install nginx-passenger
-  hosts: passenger-nginx-app*
+  hosts: passenger-nginx-app* staticsite*
   remote_user: '{{ _remote_user }}'
   become: true
 

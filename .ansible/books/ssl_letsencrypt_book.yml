@@ -1,6 +1,6 @@
 ---
 - name: Ubuntu letsencrypt SSL setup
-  hosts: passenger-nginx-app*
+  hosts: passenger-nginx-app* staticsite*
   remote_user: '{{ _remote_user }}'
   become: true
 
@@ -27,8 +27,8 @@
       - nginx
 
   roles:
-    - geerlingguy.certbot
-      when: letsencrypt is defined
+    - name: geerlingguy.certbot
+      when: letsencrypt
 
   post_tasks:
     # SSL template
@@ -36,7 +36,7 @@
       template:
         src: ../templates/nginx/certbot.j2
         dest: /etc/nginx/certbot_{{ _app.name }}.conf
-      when: letsencrypt is defined
+      when: letsencrypt
 
 # 2check:
 # certbot certificates

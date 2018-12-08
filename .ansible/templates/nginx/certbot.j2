@@ -3,9 +3,9 @@
 # https://www.digitalocean.com/community/questions/best-way-to-configure-nginx-ssl-force-http-to-redirect-to-https-force-www-to-non-www-on-serverpilot-free-plan-by-using-nginx-configuration-file-only
 # https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
 
-    ssl on;
-    ssl_certificate /etc/letsencrypt/live/{{ _ssl_domains.domains[0] }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ _ssl_domains.domains[0] }}/privkey.pem;
+    listen              443 ssl;
+    ssl_certificate /etc/letsencrypt/live/{{ _ssl_domains.0.domains[0] }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ _ssl_domains.0.domains[0] }}/privkey.pem;
 
     # Improve HTTPS performance with session resumption
     ssl_session_timeout 1d;
@@ -24,7 +24,7 @@
 
     ssl_stapling on;
     ssl_stapling_verify on;
-    ssl_trusted_certificate /etc/letsencrypt/live/{{ _ssl_domains.domains[0] }}/chain.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ _ssl_domains.0.domains[0] }}/chain.pem;
 
     #resolver 8.8.8.8 8.8.4.4 valid=300s;
     #resolver_timeout 5s;

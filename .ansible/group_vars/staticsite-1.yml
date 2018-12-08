@@ -1,0 +1,30 @@
+# Configuration applied to passenger-nginx-app server group.
+#
+# This host rolls up fresh Passenger-nginx package, sets up ruby, application folders
+# and configs
+
+---
+#=== EDIT THIS! ================================================================
+# Middleman/nginx options
+
+# for SSL certificates notifications etc.
+_admin_email: site1@example.com
+
+# no wildcards!
+_ssl_domains:
+  - domains:
+    - example.com
+    - www.example.coom
+    - help.example.com
+
+
+# Remove if you need only nginx + passenger + rbenv/ruby setup, no apps
+_site: {
+  url: example.com, # app web url
+  name: example,    # internal app name as used in rb files, in logrotates etc.
+  www_path: '/home/{{ _remote_user }}/apps/example/www', # exposed HTML folder
+  logs_path: '/home/{{ _remote_user }}/apps/example/log', # nginx access/error logs folder
+  nginx_config_prefix: '' # optional nginx config filename for sort priority
+}
+
+# See `./templates/nginx/` for configs to be applied for Nginx and passenger
