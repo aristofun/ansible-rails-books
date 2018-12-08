@@ -4,6 +4,7 @@
 # https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
 
     listen              443 ssl;
+    listen            [::]:443 ssl;
     ssl_certificate /etc/letsencrypt/live/{{ _ssl_domains.0.domains[0] }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ _ssl_domains.0.domains[0] }}/privkey.pem;
 

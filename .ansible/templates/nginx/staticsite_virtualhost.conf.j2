@@ -1,40 +1,44 @@
- server {
-     listen 80;
-     listen [::]:80;
+server {
+    listen 80;
+    listen [::]:80;
 
-     server_name www.{{ _site.url }};
-      {% if letsencrypt %}
-     return  301  https://{{ _site.url }}$request_uri;
-      {% else %}
-     return  301  http://{{ _site.url }}$request_uri;
-      {% endif %}
- }
+    server_name www.{{ _site.url }};
+
+     {% if letsencrypt %}
+
+    server_name *.{{ _site.url }} {{ _site.url }};
+    return  301  https://{{ _site.url }}$request_uri;
+
+     {% else %}
+    return  301  http://{{ _site.url }}$request_uri;
+     {% endif %}
+}
 
 
 # http -> https redirect code START =============
-# server {
-#     listen 443 ssl;
-#     listen [::]:443 ssl;
-#
-#     {% if letsencrypt %}
-#     include /etc/nginx/certbot_{{ _site.name }}.conf;
-#     {% endif %}
-#
-#
-#     server_name *.{{ _site.url }};
-#     return  301  https://{{ _site.url }}$request_uri;
-# }
+ server {
+     {% if letsencrypt %}
+     include /etc/nginx/certbot_{{ _site.name }}.conf;
+     {% endif %}
+
+     server_name www.{{ _site.url }};
+     return  301  https://{{ _site.url }}$request_uri;
+ }
 # http -> https redirect code END   =============
 
+
 server {
+    {% if letsencrypt %}
+    include /etc/nginx/certbot_{{ _site.name }}.conf;
+    {% else %}
     listen       80;
     listen [::]:80;
-		server_name {{ _site.url }};
+    {% endif %}
 
+		server_name {{ _site.url }};
 		root {{ _site.www_path }};
 
     {% if letsencrypt %}
-    include /etc/nginx/certbot_{{ _site.name }}.conf;
     {% endif %}
 
     error_log {{ _site.logs_path }}/error.log;
