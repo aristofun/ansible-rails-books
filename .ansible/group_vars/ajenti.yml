@@ -17,6 +17,8 @@ _ajenti_email: yourmaile@example.com  # your ajenti `root` account email
 #   and put the whole result string below
 #   With incorrectly formatted password Ajenti won't start!
 
+# WATCH OUT for \n when copy-pasting passwords!
+
 _ajenti_pw:  "sha512|$6$rounds=656000$Nyh1f1NBdp4OssIS$HwvLWXVsNaA9TP2RNjHI0hTpGEgX6Cu8t9t1dibEpJbgf5Uq6QBOeQlBbk6N4eKoXUNm0sYYttnliehd1"
 
 #   example: "sha512|$6$rounds=656000$Nyh1f1NBdp4OssIS$HwvLWXVsNaA9TP2RNpjHI88pS0hTpGEgX6Cu8t9t1dibEpJbgf5Uq6QBOeQlBbk6N4eKoXUNm0sYYttnliehd1"
