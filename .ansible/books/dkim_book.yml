@@ -65,6 +65,7 @@
     - copy:
         src: '../templates/dkim/{{ item }}'
         dest: '/etc/opendkim/{{ item }}'
+        force: no
       with_items:
         - TrustedHosts
         - KeyTable
