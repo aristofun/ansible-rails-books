@@ -3,13 +3,14 @@
 *In honor of all those brave programmers who have disappeared into devops swamps* 😀 just kidding
  
 ```
-1. Edit hosts.yml, edit options in up group_vars/*.yaml
-2. ansible-playbook  .ansible/books/go.yml
-3. Your servers are ready deployment and work
-4. PROFIT
+1. Edit `hosts.yml`
+2. Edit your setup options in up `group_vars/*.yaml`
+3. ansible-playbook  `.ansible/books/go.yml`
+4. Your servers are ready for deployment and work
+5. PROFIT
 ```
 
-No more time wasted f\*cking with configs, learning docker (chef, puppet-shmuppet, you name it...), 
+No more time wasted h\*cking configs, learning docker (chef, puppet-shmuppet, you name it...), 
 analyzing logs, googling linux recipes, ssh-ing back and forth.   
 
 Tested on clean Ubuntu 16.04 64bit so far. Might as well work with some updates on Ubuntu 14.04, 18.04. 
@@ -17,18 +18,18 @@ You're welcome to contribute, fix and improve!
 
 # How to
 
-You need [ansible 2.6 installed](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) on your provisioning machine (your computer).
+You need [ansible 2.6 installed](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) on your provisioning machine (your laptop).
 
 ### 1. Copy 
 
-Copy `.ansible/`, `ansible.cfg` to your rails app folder or separate folder. Rails `database.yml`, `secrets.yml` are expected to be in their default locations (configurable). 
+Copy `.ansible/`, `ansible.cfg` to your rails app folder or separate folder. Rails' `database.yml`, `secrets.yml` are expected to be in their default locations (configurable). 
 
 ### 2. Configuration
 
 Editing config files before running the scripts is all you have to do, but you have to do it.  
 
 `ansible.cfg` — ansible environment, edit paths if neccessary  
-`.ansible/hosts.yml` — the list of your servers to provision
+`.ansible/hosts.yml` — your server hosts to provision
 `.ansible/group_vars/*.yml` — **main configs** defining what will be actually going on
 
 *group_vars/*.yml* filename == hosts group in *hosts.yml*
