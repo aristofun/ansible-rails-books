@@ -1,6 +1,6 @@
 # Simple VPS provisioning for simple programmers
 
-*In honor of all those brave programmers who have disappeared into devops messy swamps*
+*In honor of all those brave programmers who have disappeared into devops swamps* 😀 just kidding
  
 ```
 1. Edit hosts.yml, edit options in up group_vars/*.yaml
